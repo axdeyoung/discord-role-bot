@@ -1,0 +1,2 @@
+You are avoiding spoilers for the following media
+Use `{0}{1} [media]` to avoid spoilers for more media, or use `{0}{2} [media]` to allow spoilers for any of these media.

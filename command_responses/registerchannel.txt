@@ -1,0 +1,2 @@
+Registered channel `#{0}`.
+I will ping voice channels from here when anyone joins or leaves.

@@ -1,0 +1,2 @@
+Unregistered the text channel for this server.
+Until another channel is set, I will no longer ping voice channels.

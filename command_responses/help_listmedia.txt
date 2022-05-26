@@ -1,0 +1,8 @@
+```
+listmedia
+
+alias: l
+====================
+[listmedia, l]
+    Print a list of available media to block spoilers for
+```

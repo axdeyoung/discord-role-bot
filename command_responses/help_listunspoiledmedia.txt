@@ -1,0 +1,7 @@
+```
+listunspoiledmedia
+
+====================
+listunspoiledmedia
+    Print a list of media for which you are currently avoiding spoilers
+```

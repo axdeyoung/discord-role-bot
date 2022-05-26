@@ -1,0 +1,9 @@
+```
+deletemedia
+
+User must have permission to modify roles
+====================
+deletemedia [media]
+    Deletes the specified media role
+
+```

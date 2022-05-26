@@ -1,0 +1,9 @@
+```
+unregisterchannel
+
+User must have permission to modify channels
+====================
+unregisterchannel
+    Remove the bot's home channel.
+    The bot will no longer send pings about spoilers.
+```

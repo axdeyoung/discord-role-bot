@@ -1,0 +1,9 @@
+```
+registerchannel
+
+User must have permission to modify channels
+====================
+registerchannel [channel]
+    Specify a home text channel for the bot.
+    The bot will then ping everyone in a voice call when anyone joins or leaves to warn about avoiding spoilers.
+```

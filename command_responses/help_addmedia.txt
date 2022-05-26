@@ -1,0 +1,10 @@
+```
+addmedia
+
+User must have permission to modify roles
+====================
+addmedia [media]
+    Creates a new role for the specified media.
+    Any other users may give themselves this role to avoid spoilers.
+
+```

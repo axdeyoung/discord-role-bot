@@ -1,0 +1,6 @@
+```
+unspoil
+====================
+unspoil [media]
+    Mark yourself as avoiding spoilers for the specified media
+```

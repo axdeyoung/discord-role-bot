@@ -1,0 +1,4 @@
+You have been removed from the `{0}` media role.
+I will no longer notify voice chats that you wish to avoid spoilers.
+
+ATTENTION: due to what I can only assume is a bug in the API, this change will not be properly reflected until you send another chat message.

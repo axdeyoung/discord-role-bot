@@ -1,0 +1,4 @@
+You have been given the `{0}` media role!
+I will notify voice chats when you join so they know to avoid spoilers!
+
+ATTENTION: due to what I can only assume is a bug in the API, this change will not be properly reflected until you send another chat message.

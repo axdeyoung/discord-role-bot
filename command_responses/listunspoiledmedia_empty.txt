@@ -1,0 +1,2 @@
+You are not avoiding spoilers for any media!
+Use `{0}{1} [media]` to select some.

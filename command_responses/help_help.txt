@@ -1,0 +1,11 @@
+```
+help
+
+alias: h
+====================
+help
+    List basic usage for all available commands
+
+help [command]
+    List verbose usage for specified command
+```

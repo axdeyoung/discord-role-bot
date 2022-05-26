@@ -1,0 +1,37 @@
+```
+Available Commands:
+
+[help, h] <command>
+    Print this help text.
+    If a command is specified, specialized help is given for that command
+
+listmedia, l
+    Print a list of available media to block spoilers for
+
+unspoil [media]
+    Mark yourself as avoiding spoilers for the specified media
+
+spoil [media]
+    Unmark yourself as avoiding spoilers for the specified media
+    
+listunspoiledmedia
+    Print a list of media for which you are currently avoiding spoilers
+
+================================
+
+addmedia [media]
+    Adds a role for the specified media
+    Requires role-editing permission
+
+deletemedia [media]
+    Deletes the specified media role
+    Requires role-editing permission
+
+registerchannel [channel]
+    Specify which text channel the bot should send pings from
+    Requires channel-editing permission
+
+unregisterchannel
+    Unregister the text channel the bot should send pings from
+    Requires channel-editing permission
+```
