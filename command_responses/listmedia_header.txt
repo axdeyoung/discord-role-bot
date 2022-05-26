@@ -1,2 +1,0 @@
-The following media is available to block spoilers
-Use `{0}{1} [media]` to blacklist yourself from spoilers

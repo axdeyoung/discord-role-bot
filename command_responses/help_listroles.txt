@@ -1,0 +1,8 @@
+```
+listroles
+
+alias: l
+====================
+[listroles, l]
+    Prints a list of available user-assignable roles.
+```

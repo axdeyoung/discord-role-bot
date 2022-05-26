@@ -1,6 +1,0 @@
-```
-spoil
-====================
-spoil [media]
-    Unmark yourself as avoiding spoilers for the specified media
-```

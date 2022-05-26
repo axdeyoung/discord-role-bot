@@ -1,9 +1,9 @@
 ```
-deletemedia
+deleterole
 
 User must have permission to modify roles
 ====================
-deletemedia [media]
-    Deletes the specified media role
+deleterole [role]
+    Deletes the specified role.
 
 ```

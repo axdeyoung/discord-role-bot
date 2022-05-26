@@ -1,0 +1,8 @@
+```
+remove
+
+alias: r
+====================
+remove [role]
+    Removes the specified role from yourself.
+```

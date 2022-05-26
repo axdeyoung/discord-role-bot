@@ -85,9 +85,9 @@ async def listMedia(message:discord.message):
 
     guild = message.guild
     if guild.id not in botState.roleDict:
-        response = getCommandResponse("listmedia_empty")
+        response = getCommandResponse("listroles_empty")
     else:
-        response = getCommandResponse("listmedia_header").format(triggerChar, "unspoil")
+        response = getCommandResponse("listroles_header").format(triggerChar, "add")
         response = response + "```"
         for roleName in botState.roleDict[guild.id]:
             response = response + "\n" + roleName# + " : " + str(botState.roleDict[roleName])
@@ -101,14 +101,14 @@ async def addMedia(message:discord.message, commandArgs:List[str]):
     try:
         mediaName = commandArgs[1]
     except:
-        response = getCommandResponse("help_addmedia")
+        response = getCommandResponse("help_createrole")
         await message.channel.send(response)
         return
 
     if await botState.addRole(mediaName, message.guild):
-        response = getCommandResponse("addmedia").format(mediaName)
+        response = getCommandResponse("createrole").format(mediaName)
     else:
-        response = getCommandResponse("already_exists").format("media role", mediaName)
+        response = getCommandResponse("already_exists").format("role", mediaName)
 
     await message.channel.send(response)
 
@@ -119,14 +119,14 @@ async def deleteMedia(message:discord.message, commandArgs:List[str]):
     try:
         mediaName = commandArgs[1]
     except:
-        response = getCommandResponse("help_deletemedia")
+        response = getCommandResponse("help_deleterole")
         await message.channel.send(response)
         return
 
     if await botState.deleteRole(mediaName, message.guild):
-        response = getCommandResponse("deletemedia").format(mediaName)
+        response = getCommandResponse("deleterole").format(mediaName)
     else:
-        response = getCommandResponse("not_found").format("media role", mediaName)
+        response = getCommandResponse("not_found").format("role", mediaName)
     await message.channel.send(response)
 
 async def unspoil(message:discord.message, commandArgs:List[str]):
@@ -134,18 +134,18 @@ async def unspoil(message:discord.message, commandArgs:List[str]):
     try:
         mediaName = commandArgs[1]
     except:
-        response = getCommandResponse("help_unspoil")
+        response = getCommandResponse("help_add")
         await message.channel.send(response)
         return
 
     role = botState.getRoleFromName(mediaName, message.guild)
 
     if role != None:
-        response = getCommandResponse("unspoil").format(mediaName)
+        response = getCommandResponse("add").format(mediaName)
         member = message.author
         await member.add_roles(role)
     else:
-        response = getCommandResponse("not_found").format("media role", mediaName)
+        response = getCommandResponse("not_found").format("role", mediaName)
     await message.channel.send(response)
 
 async def spoil(message:discord.message, commandArgs:List[str]):
@@ -153,27 +153,27 @@ async def spoil(message:discord.message, commandArgs:List[str]):
     try:
         mediaName = commandArgs[1]
     except:
-        response = getCommandResponse("help_spoil")
+        response = getCommandResponse("help_remove")
         await message.channel.send(response)
         return
 
     role = botState.getRoleFromName(mediaName, message.guild)
 
     if role != None:
-        response = getCommandResponse("spoil").format(mediaName)
+        response = getCommandResponse("remove").format(mediaName)
         member = message.author
         await member.remove_roles(role)
     else:
-        response = getCommandResponse("not_found").format("media role", mediaName)
+        response = getCommandResponse("not_found").format("role", mediaName)
     await message.channel.send(response)
 
 async def listUnspoiledMedia(message:discord.message, commandArgs:List[str]):
     # TODO add ability to search for a specified member
     roleNames = botState.mediaRoleNamesFromMember(message.author)
     if len(roleNames) == 0:
-        response = getCommandResponse("listunspoiledmedia_empty").format(triggerChar, "unspoil")
+        response = getCommandResponse("myroles_empty").format(triggerChar, "add")
     else:
-        response = getCommandResponse("listunspoiledmedia_header").format(triggerChar, "unspoil", "spoil")
+        response = getCommandResponse("myroles_header").format(triggerChar, "add", "remove")
         response = response + "```"
         for roleName in roleNames:
             response = response + "\n" + roleName# + " : " + str(botState.roleDict[roleName])
@@ -207,29 +207,29 @@ async def unregisterChannel(message:discord.message):
     response = getCommandResponse("unregisterchannel")
     await message.channel.send(response)
 
-async def pingVoiceChannel(vChannel:discord.VoiceChannel, tChannel:discord.TextChannel):
-    if len(vChannel.members) == 0:
-        print("No members in {}. Skipping ping.".format(vChannel.name))
-        return
+# async def pingVoiceChannel(vChannel:discord.VoiceChannel, tChannel:discord.TextChannel):
+#     if len(vChannel.members) == 0:
+#         print("No members in {}. Skipping ping.".format(vChannel.name))
+#         return
 
-    mediaNames = set()
-    response = getCommandResponse("ping_voice_member_header").format(vChannel.name) + "\n"
-    for member in vChannel.members:
-        memberRoleNames = botState.mediaRoleNamesFromMember(member)
-        print("{} has roles {}".format(member.name, memberRoleNames))
-        mediaNames.update(memberRoleNames)
-        response += member.mention + "\n"
+#     mediaNames = set()
+#     response = getCommandResponse("ping_voice_member_header").format(vChannel.name) + "\n"
+#     for member in vChannel.members:
+#         memberRoleNames = botState.mediaRoleNamesFromMember(member)
+#         print("{} has roles {}".format(member.name, memberRoleNames))
+#         mediaNames.update(memberRoleNames)
+#         response += member.mention + "\n"
     
 
-    if len(mediaNames) == 0:
-        response += getCommandResponse("ping_voice_role_empty")
-    else:
-        response += getCommandResponse("ping_voice_role_header") + "\n" + "```"
-        for media in mediaNames:
-            response += media + "\n"
-        response += "```"
+#     if len(mediaNames) == 0:
+#         response += getCommandResponse("ping_voice_role_empty")
+#     else:
+#         response += getCommandResponse("ping_voice_role_header") + "\n" + "```"
+#         for media in mediaNames:
+#             response += media + "\n"
+#         response += "```"
 
-    await tChannel.send(response)
+#     await tChannel.send(response)
 
 ### EVENT HANDLERS ###
 @client.event
@@ -263,22 +263,22 @@ async def on_message(message:discord.Message):
     elif command == "listroles" or command == "l":
         await listMedia(message)
 
-    elif command == "add" or command == "a": # TODO fix help and response templates
+    elif command == "add" or command == "a":
         await unspoil(message, commandArgs)
 
-    elif command == "remove" or command == "r": # TODO fix help and response templates
+    elif command == "remove" or command == "r":
         await spoil(message, commandArgs)
 
-    elif command == "myroles": # TODO fix help and response templates
+    elif command == "myroles":
         await listUnspoiledMedia(message, commandArgs)
 
-    elif command == "createrole" and message.author.guild_permissions.manage_roles: # TODO fix help and response templates
+    elif command == "createrole" and message.author.guild_permissions.manage_roles:
         await addMedia(message, commandArgs)
     
-    elif command == "deleterole" and message.author.guild_permissions.manage_roles: # TODO fix help and response templates
+    elif command == "deleterole" and message.author.guild_permissions.manage_roles:
         await deleteMedia(message, commandArgs)
 
-    elif command == "registerchannel" and message.author.guild_permissions.manage_channels: # TODO fix help and response templates
+    elif command == "registerchannel" and message.author.guild_permissions.manage_channels:
         await registerChannel(message, commandArgs)
 
     elif command == "unregisterchannel" and message.author.guild_permissions.manage_channels:
@@ -287,23 +287,23 @@ async def on_message(message:discord.Message):
     else:
         await respondCommandNotFound(message, commandArgs)
 
-@client.event
-async def on_voice_state_update(member:discord.Member, before:discord.VoiceState, after:discord.VoiceState):
-    if before.channel != after.channel:
+# @client.event
+# async def on_voice_state_update(member:discord.Member, before:discord.VoiceState, after:discord.VoiceState):
+#     if before.channel != after.channel:
 
-        if before.channel == None:
-            logResponse = "{0} joined voice channel {1}".format(member.display_name, after.channel.name)
-        elif after.channel == None:
-            logResponse = "{0} left voice channel {1}".format(member.display_name, before.channel.name)
-        else:
-            logResponse = "{0} moved from voice channel {1} to {2}".format(member.display_name, before.channel.name, after.channel.name)
+#         if before.channel == None:
+#             logResponse = "{0} joined voice channel {1}".format(member.display_name, after.channel.name)
+#         elif after.channel == None:
+#             logResponse = "{0} left voice channel {1}".format(member.display_name, before.channel.name)
+#         else:
+#             logResponse = "{0} moved from voice channel {1} to {2}".format(member.display_name, before.channel.name, after.channel.name)
         
-        print(logResponse)
-        tChannel = botState.getRegisteredChannel(member.guild)
-        if before.channel != None:
-            await pingVoiceChannel(before.channel, tChannel)
-        if after.channel != None:
-            await pingVoiceChannel(after.channel, tChannel)
+#         print(logResponse)
+#         tChannel = botState.getRegisteredChannel(member.guild)
+#         if before.channel != None:
+#             await pingVoiceChannel(before.channel, tChannel)
+#         if after.channel != None:
+#             await pingVoiceChannel(after.channel, tChannel)
         
 
 

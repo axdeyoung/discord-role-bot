@@ -1,0 +1,8 @@
+```
+add
+
+alias: a
+====================
+add [role]
+    Adds the specified role to yourself.
+```

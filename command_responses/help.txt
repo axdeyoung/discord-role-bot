@@ -5,33 +5,33 @@ Available Commands:
     Print this help text.
     If a command is specified, specialized help is given for that command
 
-listmedia, l
-    Print a list of available media to block spoilers for
+listroles, l
+    Prints a list of available user-assignable roles
 
-unspoil [media]
-    Mark yourself as avoiding spoilers for the specified media
+add [role]
+    Adds the specified role to yourself
 
-spoil [media]
-    Unmark yourself as avoiding spoilers for the specified media
+remove [role]
+    removes the specified role from yourself
     
-listunspoiledmedia
-    Print a list of media for which you are currently avoiding spoilers
+myroles
+    Prints a list of roles which you have assigned to yourself
 
 ================================
 
-addmedia [media]
-    Adds a role for the specified media
+createrole [role]
+    Creates a new user-managed role with the specified name
     Requires role-editing permission
 
-deletemedia [media]
-    Deletes the specified media role
+deleterole [role]
+    Deletes the specified role
     Requires role-editing permission
 
 registerchannel [channel]
-    Specify which text channel the bot should send pings from
+    Specifies the text channel for the bot to send fully automated messages.
     Requires channel-editing permission
 
 unregisterchannel
-    Unregister the text channel the bot should send pings from
+    Removes the bot's home channel, so it will no longer send fully automated messages.
     Requires channel-editing permission
 ```

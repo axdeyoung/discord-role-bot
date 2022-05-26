@@ -1,0 +1,7 @@
+```
+myroles
+
+====================
+myroles
+    Prints a list of roles which you have assigned to yourself.
+```

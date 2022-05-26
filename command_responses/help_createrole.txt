@@ -1,0 +1,10 @@
+```
+createrole
+
+User must have permission to modify roles
+====================
+createrole [role]
+    Creates a new role with the specified name.
+    Any other users may give themselves this role with the "add" command.
+
+```
