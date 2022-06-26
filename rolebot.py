@@ -98,16 +98,16 @@ async def listRoles(message:discord.message):
 async def createRole(message:discord.message, commandArgs:List[str]):
     response = None
     try:
-        mediaName = commandArgs[1]
+        roleName = commandArgs[1]
     except:
         response = getCommandResponse("help_createrole")
         await message.channel.send(response)
         return
 
-    if await botState.addRole(mediaName, message.guild):
-        response = getCommandResponse("createrole").format(mediaName)
+    if await botState.addRole(roleName, message.guild):
+        response = getCommandResponse("createrole").format(roleName)
     else:
-        response = getCommandResponse("already_exists").format("role", mediaName)
+        response = getCommandResponse("already_exists").format("role", roleName)
 
     await message.channel.send(response)
 
@@ -116,59 +116,59 @@ async def deleteRole(message:discord.message, commandArgs:List[str]):
     response = None
     
     try:
-        mediaName = commandArgs[1]
+        roleName = commandArgs[1]
     except:
         response = getCommandResponse("help_deleterole")
         await message.channel.send(response)
         return
 
-    if await botState.deleteRole(mediaName, message.guild):
-        response = getCommandResponse("deleterole").format(mediaName)
+    if await botState.deleteRole(roleName, message.guild):
+        response = getCommandResponse("deleterole").format(roleName)
     else:
-        response = getCommandResponse("not_found").format("role", mediaName)
+        response = getCommandResponse("not_found").format("role", roleName)
     await message.channel.send(response)
 
 async def add(message:discord.message, commandArgs:List[str]):
     response = None
     try:
-        mediaName = commandArgs[1]
+        roleName = commandArgs[1]
     except:
         response = getCommandResponse("help_add")
         await message.channel.send(response)
         return
 
-    role = botState.getRoleFromName(mediaName, message.guild)
+    role = botState.getRoleFromName(roleName, message.guild)
 
     if role != None:
-        response = getCommandResponse("add").format(mediaName)
+        response = getCommandResponse("add").format(roleName)
         member = message.author
         await member.add_roles(role)
     else:
-        response = getCommandResponse("not_found").format("role", mediaName)
+        response = getCommandResponse("not_found").format("role", roleName)
     await message.channel.send(response)
 
 async def remove(message:discord.message, commandArgs:List[str]):
     response = None
     try:
-        mediaName = commandArgs[1]
+        roleName = commandArgs[1]
     except:
         response = getCommandResponse("help_remove")
         await message.channel.send(response)
         return
 
-    role = botState.getRoleFromName(mediaName, message.guild)
+    role = botState.getRoleFromName(roleName, message.guild)
 
     if role != None:
-        response = getCommandResponse("remove").format(mediaName)
+        response = getCommandResponse("remove").format(roleName)
         member = message.author
         await member.remove_roles(role)
     else:
-        response = getCommandResponse("not_found").format("role", mediaName)
+        response = getCommandResponse("not_found").format("role", roleName)
     await message.channel.send(response)
 
 async def listMyRoles(message:discord.message, commandArgs:List[str]):
     # TODO add ability to search for a specified member
-    roleNames = botState.mediaRoleNamesFromMember(message.author)
+    roleNames = botState.getRoleNamesFromMember(message.author)
     if len(roleNames) == 0:
         response = getCommandResponse("myroles_empty").format(triggerChar, "add")
     else:

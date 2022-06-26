@@ -87,12 +87,12 @@ class BotState:
             return None
         return role
 
-    def mediaRoleNamesFromMember(self, member:discord.Member):
+    def getRoleNamesFromMember(self, member:discord.Member):
         '''
-        Returns: List[str], the list of media role names assigned to the member
+        Returns: List[str], the list of role names assigned to the member
         '''
-        # print("Running mediaRoleNamesFromMember({0} : {1})".format(member.name, member.id))
-        # if this guild doesn't have any media, return an empty list
+        # print("Running getRoleNamesFromMember({0} : {1})".format(member.name, member.id))
+        # if this guild doesn't have any bot-managed roles, return an empty list
         guild = member.guild
         if guild.id not in self.roleDict:
             print("Member's guild not registered.")
@@ -110,6 +110,17 @@ class BotState:
         
         return roleNames
 
+    def getMembersInRoleName(self, roleName:str, guild:discord.Guild):
+        '''
+        Returns: List[discord.Member]
+        Returns: None, if no role exists
+        Returns: empty List if no members are in role
+        '''
+        role = self.getRoleFromName(roleName, guild)
+        if role == None:
+            return None
+        return role.members
+            
 
     def registerChannel(self, channel:discord.TextChannel):
         self.channelDict[channel.guild.id] = channel.id
