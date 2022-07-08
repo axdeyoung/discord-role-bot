@@ -17,6 +17,9 @@ remove [role]
 myroles
     Prints a list of roles which you have assigned to yourself
 
+listmembers [role]
+    Prints a list of the members assigned to the specified role
+
 ================================
 
 createrole [role]
@@ -34,4 +37,11 @@ registerchannel [channel]
 unregisterchannel
     Removes the bot's home channel, so it will no longer send fully automated messages.
     Requires channel-editing permission
+
+================================
+Additional notes:
+
+This bot uses the shlex library to parse commands.
+Arguments are case-sensitive.
+Backslashes or quotation marks can be used to escape spaces.
 ```

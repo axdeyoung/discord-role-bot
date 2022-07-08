@@ -119,7 +119,14 @@ class BotState:
         role = self.getRoleFromName(roleName, guild)
         if role == None:
             return None
-        return role.members
+
+        membersInRole = list()
+        for member in guild.members:
+            if role in member.roles:
+                membersInRole.append(member)
+        
+        return membersInRole
+
             
 
     def registerChannel(self, channel:discord.TextChannel):

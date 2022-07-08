@@ -23,8 +23,12 @@ scriptParser.add_argument('-t', '--token', metavar='tokenFile', dest='tokenFile'
                         help = "file to load OAuth2 token from")
 args = scriptParser.parse_args()                        
 
+intents = discord.Intents.default()
+intents.members = True
+
+
 # get the Discord client
-client = discord.Client()
+client = discord.Client(intents=intents)
 
 
 ### HELPERS ###
@@ -81,7 +85,7 @@ async def respondCommandNotFound(message:discord.message, commandArgs:List[str])
     response = getCommandResponse("not_found").format("command", commandArgs[0].lower())
     await message.channel.send(response)
 
-async def listRoles(message:discord.message):
+async def listAllRoles(message:discord.message):
     guild = message.guild
     if guild.id not in botState.roleDict:
         response = getCommandResponse("listroles_empty")
@@ -180,6 +184,33 @@ async def listMyRoles(message:discord.message, commandArgs:List[str]):
 
     await message.channel.send(response)
 
+async def listMembersInRole(message:discord.message, commandArgs:List[str]):
+    # Lists the members of a given role
+    roleName = None
+    response = None
+    try:
+        roleName = commandArgs[1]
+    except:
+        response = getCommandResponse("help_listmembers")
+        await message.channel.send(response)
+        return
+
+    guild = message.guild
+    membersInRole = botState.getMembersInRoleName(roleName, guild)
+    if membersInRole == None:
+        response = getCommandResponse("not_found").format("role", roleName)
+    
+    elif len(membersInRole) == 0:
+        response = getCommandResponse("listmembers_empty").format(roleName)
+
+    else:
+        response = getCommandResponse("listmembers_header").format(roleName)
+        response = response + "```"
+        for member in membersInRole:
+            response = response + "\n" + (member.nick or member.name)
+        response = response + "```"
+    
+    await message.channel.send(response)
 
 async def registerChannel(message:discord.message, commandArgs:List[str]):
     response = None
@@ -234,7 +265,10 @@ async def on_message(message:discord.Message):
         await respondHelp(message, commandArgs)
 
     elif command == "listroles" or command == "l":
-        await listRoles(message)
+        await listAllRoles(message)
+
+    elif command == "listmembers":
+        await listMembersInRole(message, commandArgs)
 
     elif command == "add" or command == "a":
         await add(message, commandArgs)

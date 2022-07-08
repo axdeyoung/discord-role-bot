@@ -1,0 +1,7 @@
+```
+listmembers
+
+====================
+listmembers [role]
+    Prints a list of the members assigned to the specified role
+```
