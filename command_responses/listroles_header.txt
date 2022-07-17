@@ -1,2 +1,2 @@
-The following user-assignable roles are avaialable
+The following user-assignable roles are available
 Use `{0}{1} [role]` to assign the role to yourself
