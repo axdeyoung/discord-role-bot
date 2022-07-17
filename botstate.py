@@ -38,7 +38,7 @@ class BotState:
         '''
         #if discord.utils.get(guild.roles, name=roleName) == None:
         if roleName not in self.roleDict:
-            role = await guild.create_role(name=roleName, colour=0x000033, mentionable=False)
+            role = await guild.create_role(name=roleName, colour=0x000033, mentionable=True)
             if guild.id not in self.roleDict:
                 self.roleDict[guild.id] = dict()
             self.roleDict[guild.id][role.name] = role.id
