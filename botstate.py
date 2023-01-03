@@ -69,7 +69,20 @@ class BotState:
         except:
             return False
         return True
-        
+    
+    def getManagedRoles(self, guild:discord.Guild):
+        '''
+        Returns a List of roles managed by the bot in the given guild.
+        Returns an empty list if the bot does not manage any roles in the given guild.
+        '''
+        # check if the given guild has any managed roles
+        if guild.id in self.roleDict:
+            # convert the managed role names to role objects and return them.
+            return [self.getRoleFromName(role_name, guild) for role_name in self.roleDict[guild.id]]
+        else:
+            # return an empty list if the given guild doesn't manage any roles.
+            return []
+
     def getRoleFromName(self, roleName:str, guild:discord.Guild):
         roleID = None
         role = None

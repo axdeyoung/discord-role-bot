@@ -41,7 +41,5 @@ unregisterchannel
 ================================
 Additional notes:
 
-This bot uses the shlex library to parse commands.
 Arguments are case-sensitive.
-Backslashes or quotation marks can be used to escape spaces.
 ```

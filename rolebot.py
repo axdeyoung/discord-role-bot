@@ -1,3 +1,5 @@
+#!/usr/bin/python3.8
+
 from typing import List
 import discord
 from os import path
@@ -6,7 +8,8 @@ import sys
 import shlex
 from botstate import *
 
-triggerChar = '$'
+from discord.ext import commands #Application Commands
+#from discord_slash import SlashCommand, SlashContext
 
 
 # Get command responses dir path
@@ -26,9 +29,8 @@ args = scriptParser.parse_args()
 intents = discord.Intents.default()
 intents.members = True
 
-
-# get the Discord client
-client = discord.Client(intents=intents)
+# get the Discord bot bot
+bot = commands.Bot(intents=intents, command_prefix='/')
 
 
 ### HELPERS ###
@@ -65,234 +67,182 @@ def getCommandResponse(fileName:str):
     except:
         return "Error: file {} not found".format(fileName)
 
-
-### COMMAND RESPONSES ###
-async def respondHelp(message:discord.Message, commandArgs:List[str]):
-    if len(commandArgs) == 1: # if help used on its own
-        print("Sending basic help text")
-        response = getCommandResponse("help")
-        await message.channel.send(response)
-    else: # if one or more arguments are passed to help
-        print("Attempting to send help text for {}".format(commandArgs[1]))
-        # get help file of format "help_cmd.txt"
-        response = getCommandResponse("help_{}".format(commandArgs[1].lower()))
-        # if that message doesn't exist, give generic command not found text
-        if response == None:
-            response = getCommandResponse("not_found").format("help text for", commandArgs[1].lower())
-        await message.channel.send(response)
-
 async def respondCommandNotFound(message:discord.message, commandArgs:List[str]):
     response = getCommandResponse("not_found").format("command", commandArgs[0].lower())
     await message.channel.send(response)
 
-async def listAllRoles(message:discord.message):
-    guild = message.guild
+### EVENT HANDLERS ###
+@bot.event
+async def on_ready():
+    print("Logged in as user {0.user} and ready to go!".format(bot))
+
+### COMMANDS ###
+
+# help
+bot.remove_command('help') # remove default help command
+@bot.command(name='help', aliases=['h'], brief='Show help text')
+async def help_command(ctx, *, command: str = None):
+    if command is None:
+        # Send basic help text
+        response = getCommandResponse("help")
+        await ctx.send(response)
+    else:
+        # Attempt to send help text for the specified command
+        response = getCommandResponse(f"help_{command.lower()}")
+        if response is None: #TODO getCommandResponse never returns None. probably should fix getCommandResponse.
+            response = getCommandResponse("not_found").format("help text for", command.lower())
+        await ctx.send(response)
+    
+# ping
+@bot.command(name='ping', brief='Ping the bot to check if it\'s alive')
+async def ping_command(ctx):
+    print("Responding to ping!")
+    await ctx.send("pong")
+
+# role TODO create a role menu which uses a Select Menu.
+# This does not appear to be possible with the latest version of Python at the time of writing, 3.6.9
+# @bot.command(name='role', aliases=['r'], brief='Assign roles to yourself')
+# @commands.has_permissions(manage_roles=True)
+# async def role_command(ctx):
+
+# listroles l
+@bot.command(name='listroles', aliases=['l'], brief='Lists self-assignable roles')
+async def listroles_command(ctx):
+    guild = ctx.guild
     if guild.id not in botState.roleDict:
         response = getCommandResponse("listroles_empty")
     else:
-        response = getCommandResponse("listroles_header").format(triggerChar, "add")
+        response = getCommandResponse("listroles_header").format(bot.command_prefix, "add")
         response = response + "```"
         for roleName in botState.roleDict[guild.id]:
             response = response + "\n" + roleName# + " : " + str(botState.roleDict[roleName])
         response = response + "```"
 
-    await message.channel.send(response)
+    await ctx.send(response)
 
-
-async def createRole(message:discord.message, commandArgs:List[str]):
-    response = None
-    try:
-        roleName = commandArgs[1]
-    except:
-        response = getCommandResponse("help_createrole")
-        await message.channel.send(response)
-        return
-
-    if await botState.addRole(roleName, message.guild):
-        response = getCommandResponse("createrole").format(roleName)
-    else:
-        response = getCommandResponse("already_exists").format("role", roleName)
-
-    await message.channel.send(response)
-
-
-async def deleteRole(message:discord.message, commandArgs:List[str]):
-    response = None
-    
-    try:
-        roleName = commandArgs[1]
-    except:
-        response = getCommandResponse("help_deleterole")
-        await message.channel.send(response)
-        return
-
-    if await botState.deleteRole(roleName, message.guild):
-        response = getCommandResponse("deleterole").format(roleName)
-    else:
-        response = getCommandResponse("not_found").format("role", roleName)
-    await message.channel.send(response)
-
-async def add(message:discord.message, commandArgs:List[str]):
-    response = None
-    try:
-        roleName = commandArgs[1]
-    except:
-        response = getCommandResponse("help_add")
-        await message.channel.send(response)
-        return
-
-    role = botState.getRoleFromName(roleName, message.guild)
-
-    if role != None:
-        response = getCommandResponse("add").format(roleName)
-        member = message.author
-        await member.add_roles(role)
-    else:
-        response = getCommandResponse("not_found").format("role", roleName)
-    await message.channel.send(response)
-
-async def remove(message:discord.message, commandArgs:List[str]):
-    response = None
-    try:
-        roleName = commandArgs[1]
-    except:
-        response = getCommandResponse("help_remove")
-        await message.channel.send(response)
-        return
-
-    role = botState.getRoleFromName(roleName, message.guild)
-
-    if role != None:
-        response = getCommandResponse("remove").format(roleName)
-        member = message.author
-        await member.remove_roles(role)
-    else:
-        response = getCommandResponse("not_found").format("role", roleName)
-    await message.channel.send(response)
-
-async def listMyRoles(message:discord.message, commandArgs:List[str]):
-    # TODO add ability to search for a specified member
-    roleNames = botState.getRoleNamesFromMember(message.author)
-    if len(roleNames) == 0:
-        response = getCommandResponse("myroles_empty").format(triggerChar, "add")
-    else:
-        response = getCommandResponse("myroles_header").format(triggerChar, "add", "remove")
-        response = response + "```"
-        for roleName in roleNames:
-            response = response + "\n" + roleName# + " : " + str(botState.roleDict[roleName])
-        response = response + "```"
-
-    await message.channel.send(response)
-
-async def listMembersInRole(message:discord.message, commandArgs:List[str]):
-    # Lists the members of a given role
-    roleName = None
-    response = None
-    try:
-        roleName = commandArgs[1]
-    except:
+# listmembers
+@bot.command(name='listmembers', brief='lists the members of a given role')
+async def listroles_command(ctx, *, role_name:str = None):
+    # check if an argument was provided
+    if role_name == None:
+        # if there was no argument provided, print help text and return.
         response = getCommandResponse("help_listmembers")
-        await message.channel.send(response)
+        await ctx.send(response)
         return
-
-    guild = message.guild
-    membersInRole = botState.getMembersInRoleName(roleName, guild)
-    if membersInRole == None:
-        response = getCommandResponse("not_found").format("role", roleName)
     
-    elif len(membersInRole) == 0:
-        response = getCommandResponse("listmembers_empty").format(roleName)
-
+    # if there is an argument provided...
+    guild = ctx.guild
+    members_in_role = botState.getMembersInRoleName(role_name, guild)
+    # Check if the role exists. If not, print role not found
+    if members_in_role == None:
+        response = getCommandResponse("not_found").format("role", role_name)
+    # if the role exists but has no members, print listmembers empty text
+    elif len(members_in_role) == 0:
+        response = getCommandResponse("listmembers_empty").format(role_name)
+    # Otherwise, the role has members; list them
     else:
-        response = getCommandResponse("listmembers_header").format(roleName)
+        response = getCommandResponse("listmembers_header").format(role_name)
         response = response + "```"
-        for member in membersInRole:
+        for member in members_in_role:
             response = response + "\n" + (member.nick or member.name)
         response = response + "```"
-    
-    await message.channel.send(response)
 
-async def registerChannel(message:discord.message, commandArgs:List[str]):
-    response = None
-    try:
-        channelName = commandArgs[1]
-    except:
-        response = getCommandResponse("help_registerchannel")
-        await message.channel.send(response)
-        return
-    
-    guild = message.guild
-    channel = discord.utils.get(guild.text_channels, name=channelName)
-    if channel != None:
-        response = getCommandResponse("registerchannel").format(channelName)
-        botState.registerChannel(channel)
-    else:
-        response = getCommandResponse("not_found").format("channel", channelName)
-    await message.channel.send(response)
+    # finally, send the message
+    await ctx.send(response)
 
-async def unregisterChannel(message:discord.message):
-    response = None
-    guild = message.guild
-    botState.unregisterChannel(guild)
-    response = getCommandResponse("unregisterchannel")
-    await message.channel.send(response)
-
-### EVENT HANDLERS ###
-@client.event
-async def on_ready():
-    print("Logged in as user {0.user} and ready to go!".format(client))
-
-@client.event
-async def on_message(message:discord.Message):
-    # if the message is from me, ignore it.
-    if message.author == client.user:
-        return 
-    # if the message is not a command, ignore it
-    if not message.content.startswith(triggerChar):
+# add a
+@bot.command(name='add', aliases=['a'], brief="Assign a role to yourself")
+async def add_role_command(ctx, *, role_name:str = None):
+    # Verify arguments
+    if role_name == None:
+        response = getCommandResponse("help_add")
+        await ctx.send(response)
         return
 
-    # read message
-    commandArgs = parseMessage(message.content)
+    role = botState.getRoleFromName(role_name, ctx.guild)
 
-    # respond to valid commands
-    command = commandArgs[0].lower()
-
-    if command == "ping":
-        print("Ponging!")
-        await message.channel.send('pong')
-    
-    elif command == "help" or command == "h":
-        await respondHelp(message, commandArgs)
-
-    elif command == "listroles" or command == "l":
-        await listAllRoles(message)
-
-    elif command == "listmembers":
-        await listMembersInRole(message, commandArgs)
-
-    elif command == "add" or command == "a":
-        await add(message, commandArgs)
-
-    elif command == "remove" or command == "r":
-        await remove(message, commandArgs)
-
-    elif command == "myroles":
-        await listMyRoles(message, commandArgs)
-
-    elif command == "createrole" and message.author.guild_permissions.manage_roles:
-        await createRole(message, commandArgs)
-    
-    elif command == "deleterole" and message.author.guild_permissions.manage_roles:
-        await deleteRole(message, commandArgs)
-
-    elif command == "registerchannel" and message.author.guild_permissions.manage_channels:
-        await registerChannel(message, commandArgs)
-
-    elif command == "unregisterchannel" and message.author.guild_permissions.manage_channels:
-        await unregisterChannel(message)
-
+    # if the given role does not exist, print not found text
+    if role == None: # TODO this branch is never taken for some reason
+        response = getCommandResponse("not_found").format("role", role_name)
     else:
-        await respondCommandNotFound(message, commandArgs)
+        response = getCommandResponse("add").format(role_name)
+        await ctx.author.add_roles(role)
+
+    await ctx.send(response)
+
+# remove r
+@bot.command(name='remove', aliases=['r'], brief="Remove a role from yourself")
+async def remove_role_command(ctx, *, role_name:str = None):
+    # Verify arguments
+    if role_name == None:
+        response = getCommandResponse("help_remove")
+        await ctx.send(response)
+        return
+
+    role = botState.getRoleFromName(role_name, ctx.guild)
+
+    # if the given role does not exist, print not found text
+    if role == None:
+        response = getCommandResponse("not_found").format("role", role_name)
+    else:
+        response = getCommandResponse("remove").format(role_name)
+        await ctx.author.remove_roles(role)
+
+    await ctx.send(response)
+
+# myroles TODO add ability to search for roles of a specific member
+@bot.command(name='myroles', brief="Print a list of my roles")
+async def myroles_command(ctx):
+    role_names = botState.getRoleNamesFromMember(ctx.author)
+    if len(role_names) == 0:
+        response = getCommandResponse("myroles_empty").format(bot.command_prefix, "add")
+    else:
+        response = getCommandResponse("myroles_header").format(bot.command_prefix, "add", "remove")
+        response = response + "```"
+        for role_name in role_names:
+            response = response + "\n" + role_name# + " : " + str(botState.roleDict[roleName])
+        response = response + "```"
+    
+    await ctx.send(response)
+
+# createrole
+@bot.command(name='createrole', brief="Creates a new bot-managed role")
+async def createrole_command(ctx, *, role_name:str):
+    # verify permissions
+    if not ctx.author.guild_permissions.manage_roles:
+        return
+
+    # Verify arguments
+    if role_name == None:
+        response = getCommandResponse("help_createrole")
+        await ctx.send(response)
+        return
+    
+    if await botState.addRole(role_name, ctx.guild):
+        response = getCommandResponse("createrole").format(role_name)
+    else:
+        response = getCommandResponse("already_exists").format("role", role_name)
+    
+    await ctx.send(response)
+
+# deleterole TODO
+@bot.command(name='deleterole', brief="Deletes an existing bot-managed role")
+async def deleterole_command(ctx, *, role_name:str):
+    # verify permissions
+    if not ctx.author.guild_permissions.manage_roles:
+        return
+
+    # Verify arguments
+    if role_name == None:
+        response = getCommandResponse("help_deleterole")
+        await ctx.send(response)
+        return
+    
+    if await botState.deleteRole(role_name, ctx.guild):
+        response = getCommandResponse("deleterole").format(role_name)
+    else:
+        response = getCommandResponse("not_found").format("role", role_name)
+    await ctx.send(response)
 
 ### MAIN ###
 def main():
@@ -304,8 +254,8 @@ def main():
     with open(tokenPath, 'r') as tokenFile:
         token = tokenFile.read().strip()
 
-    # Finally, start the client
-    client.run(token)
+    # Finally, start the bot
+    bot.run(token)
 
 # wrapping my code in a main function makes the C programmer in me feel safe.
 sys.exit(main())
