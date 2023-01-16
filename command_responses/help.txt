@@ -29,15 +29,7 @@ createrole [role]
 deleterole [role]
     Deletes the specified role
     Requires role-editing permission
-
-registerchannel [channel]
-    Specifies the text channel for the bot to send fully automated messages.
-    Requires channel-editing permission
-
-unregisterchannel
-    Removes the bot's home channel, so it will no longer send fully automated messages.
-    Requires channel-editing permission
-
+    
 ================================
 Additional notes:
 
