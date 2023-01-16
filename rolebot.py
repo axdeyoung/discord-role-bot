@@ -30,7 +30,7 @@ intents = discord.Intents.default()
 intents.members = True
 
 # get the Discord bot bot
-bot = commands.Bot(intents=intents, command_prefix='/')
+bot = commands.Bot(intents=intents, command_prefix='$')
 
 
 ### HELPERS ###
