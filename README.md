@@ -1,5 +1,4 @@
-# Discord Spoiler Bot
+# Discord Role Bot
 
-Users can use this bot to register themselves as avoiding spoilers for particular media.
-
-Whenever any user enters or leaves a voice channel, the bot pings the entire voice channel with an updated list of media for which spoilers should be avoided.
+Allows users to administer roles to themselves with simple commands.
+Does not use interactive command prompts in Discord, as this does not appear to be supported in the Python API.
