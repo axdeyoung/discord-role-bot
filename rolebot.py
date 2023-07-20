@@ -34,18 +34,6 @@ bot = commands.Bot(intents=intents, command_prefix='$')
 
 
 ### HELPERS ###
-def parseMessage(message:str):
-    '''Reads the Discord message and returns a list of arguments'''
-    # test of this message is a valid command
-    if not message.startswith(triggerChar):
-        return None
-
-    print("Parsing message: {}".format(message))
-    slicedMessage = message[1:] # delete the trigger symbol
-    parsedMessage = shlex.split(slicedMessage)
-    print("Parsed: {}".format(parsedMessage))
-    return parsedMessage
-
 def getCommandResponse(fileName:str):
     '''
     Expects a file name in command_responses directory.
